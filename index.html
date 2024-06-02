@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DO NOT AFk</title>
+    <style>
+        body {
+            background-color: rgb(33, 0, 0); /* 更改背景色 */
+            color: white; /* 白色字體 */
+            font-weight: bold; /* 字體加粗 */
+            font-size: 2.5em; /* 放大字體 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .font{
+            font-family:Arial Black;
+        }
+        #timer {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+        .button-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .countdown-button {
+            background-color: white;
+            color: rgb(33, 0, 0);
+            border: none;
+            padding: 10px 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            position: absolute;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 style="font-family:Arial Black;">R U AFK?</h1>
+        <div id="timer">00:00:00</div>
+    </div>
+    <div class="button-container" id="button-container"></div>
+
+    <script>
+        let seconds = 0;
+        let minutes = 0;
+        let hours = 0;
+        let timerInterval;
+        let buttons = [];
+
+        function startTimer() {
+            function updateTimer() {
+                seconds++;
+                if (seconds == 60) {
+                    seconds = 0;
+                    minutes++;
+                    if (minutes == 60) {
+                        minutes = 0;
+                        hours++;
+                    }
+                }
+
+                let displaySeconds = seconds < 10 ? '0' + seconds : seconds;
+                let displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                let displayHours = hours < 10 ? '0' + hours : hours;
+
+                document.getElementById('timer').innerText = `${displayHours}:${displayMinutes}:${displaySeconds}`;
+            }
+
+            timerInterval = setInterval(updateTimer, 1000);
+            generateRandomButton();
+        }
+
+        function generateRandomButton() {
+            const randomTime = Math.floor(Math.random() * 1000) //+ 5000; // 5到15秒之間的隨機時間
+
+            setTimeout(() => {
+                if (buttons.length < 2) {
+                    createButton();
+                }
+                generateRandomButton();
+            }, randomTime);
+        }
+
+        function createButton() {
+            const button = document.createElement('button');
+            button.className = 'countdown-button';
+            button.innerText = 'no';
+
+            // 設定按鈕隨機位置
+            const container = document.getElementById('button-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            const buttonWidth = 200; // 大約按鈕的寬度
+            const buttonHeight = 60; // 大約按鈕的高度
+
+            const randomX = Math.floor(Math.random() * (containerWidth - buttonWidth));
+            const randomY = Math.floor(Math.random() * (containerHeight - buttonHeight));
+
+            button.style.left = `${randomX}px`;
+            button.style.top = `${randomY}px`;
+
+            button.onclick = () => {
+                clearTimeout(button.timer);
+                clearInterval(button.countdownInterval);
+                document.getElementById('button-container').removeChild(button);
+                buttons = buttons.filter(b => b !== button);
+            };
+
+            document.getElementById('button-container').appendChild(button);
+            buttons.push(button);
+
+            let countdown = 3;
+            button.countdownInterval = setInterval(() => {
+                countdown--;
+                // button.innerText = countdown;
+                if (countdown <= 0) {
+                    clearInterval(button.countdownInterval);
+                }
+            }, 1000);
+
+            button.timer = setTimeout(() => {
+                clearInterval(timerInterval);
+                alert('U R AFK!');
+                window.close();
+            }, 3000);
+        }
+
+        window.onload = startTimer;
+    </script>
+</body>
+</html>
+
